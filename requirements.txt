@@ -1,0 +1,10 @@
+numpy
+pandas
+asyncio
+requests
+dotenv
+fastapi
+uvicorn
+pydantic
+beeai_framework
+-e .

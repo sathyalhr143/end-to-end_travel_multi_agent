@@ -1,0 +1,6 @@
+1. create env
+2. activate env
+3. initialize git  git init
+4. create a README.md file and enter info
+5. git add README.md 
+5. git commit -m "First commit" # to commit
