@@ -2,9 +2,10 @@ numpy
 pandas
 asyncio
 requests
+fastapi[all]
 dotenv
-fastapi
+streamlit
 uvicorn
 pydantic
-beeai_framework
+beeai-framework[wikipedia]
 -e .

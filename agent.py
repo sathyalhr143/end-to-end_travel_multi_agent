@@ -34,13 +34,16 @@ async def multi_agent_travel_planner_with_language():
     """
     
     # Initialize the language model
-    llm = ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", 'gemini:gemini-3-pro-preview'),
+    llm = ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", 'gemini:gemini-2.5-pro'),
         ChatModelParameters(temperature=0)
     )
+    
+    llm.allow_parallel_tool_calls = True
     
     # === AGENT 1: DESTINATION RESEARCH EXPERT ===
     destination_expert = RequirementAgent(
         llm=llm,
+        
         tools=[WikipediaTool(), ThinkTool()],
         memory=UnconstrainedMemory(),
         instructions="""You are a Destination Research Expert specializing in comprehensive travel destination analysis.
