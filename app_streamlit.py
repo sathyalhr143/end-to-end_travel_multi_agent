@@ -180,7 +180,7 @@ with st.sidebar:
         st.rerun()
 
 # --- Main Interface ---
-st.title("✈️ AI Travel Planner (HITL)")
+st.title("✈️ Multi-Agent AI Travel Planner")
 st.caption("Developed using **BeeAI Framework**")
 st.caption("-by Sathyaraj Medipalli")
 
