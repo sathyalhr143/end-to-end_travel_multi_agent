@@ -1,5 +1,7 @@
 from setuptools import setup, find_packages
 
+
+HYPEN_E_DOT = '-e .'
 def get_requirements(filename: str) -> list[str]:
     """This function return the packages in the filename
     as a list of strings.
@@ -7,7 +9,7 @@ def get_requirements(filename: str) -> list[str]:
     requirements =[]
     with open(filename, 'r') as f:
         requirements = f.read().splitlines()
-        if '-e .' in requirements:
+        if HYPEN_E_DOT in requirements:
             requirements.remove('-e .')
     return requirements 
 

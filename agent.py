@@ -1,5 +1,10 @@
 import asyncio
 import logging
+
+from src.exception import CustomException
+from src.logger import logger
+from src.prompt import *
+
 from beeai_framework.agents.requirement import RequirementAgent
 from beeai_framework.agents.requirement.requirements.conditional import ConditionalRequirement
 from beeai_framework.agents.requirement.requirements.ask_permission import AskPermissionRequirement
@@ -11,17 +16,20 @@ from beeai_framework.tools.think import ThinkTool
 from beeai_framework.tools.handoff import HandoffTool
 from beeai_framework.middleware.trajectory import GlobalTrajectoryMiddleware
 from beeai_framework.tools import Tool
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 import asyncio
+
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
 
-async def multi_agent_travel_planner_with_language():
+async def multi_agent_travel_planner_with_language(user_query=input_query):
     """
     Advanced Multi-Agent Travel Planning System with Language Expert
     
@@ -34,7 +42,7 @@ async def multi_agent_travel_planner_with_language():
     """
     
     # Initialize the language model
-    llm = ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", 'gemini:gemini-2.5-pro'),
+    llm = ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", "openai:gpt-4o-mini"),
         ChatModelParameters(temperature=0)
     )
     
@@ -46,15 +54,7 @@ async def multi_agent_travel_planner_with_language():
         
         tools=[WikipediaTool(), ThinkTool()],
         memory=UnconstrainedMemory(),
-        instructions="""You are a Destination Research Expert specializing in comprehensive travel destination analysis.
-
-        Your expertise:
-        - Landmarks and tourist activities
-        - Best times to visit and seasonal considerations
-        - Transportation options and accessibility
-        - Safety considerations and travel advisories
-
-        Always provide detailed, factual information with clear source attribution.""",
+        instructions=destination_expert_instruction,
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
         requirements=[
             ConditionalRequirement(
@@ -79,17 +79,7 @@ async def multi_agent_travel_planner_with_language():
         llm=llm,
         tools=[OpenMeteoTool(), ThinkTool()],
         memory=UnconstrainedMemory(),
-        instructions="""You are a Travel Meteorologist specializing in weather analysis for travel planning.
-
-        Your expertise:
-        - Climate patterns and seasonal weather analysis
-        - Travel-specific weather recommendations
-        - Packing suggestions based on weather forecasts
-        - Activity planning based on weather conditions
-        - Regional climate variations and microclimates
-        - Weather-related travel risks and precautions
-
-        Focus on actionable weather guidance for travelers.""",
+        instructions=travel_meteorologist_instruction,
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
         requirements=[
             ConditionalRequirement(
@@ -112,18 +102,7 @@ async def multi_agent_travel_planner_with_language():
         llm=llm,
         tools=[WikipediaTool(), ThinkTool()],
         memory=UnconstrainedMemory(),
-        instructions="""You are a Language & Cultural Expert specializing in linguistic and cultural guidance for travelers.
-
-        Your expertise:
-        - Local languages and dialects spoken in destinations
-        - Essential phrases and communication tips for travelers
-        - Cultural etiquette, customs, and social norms
-        - Religious and cultural sensitivities to be aware of
-        - Local communication styles and business etiquette
-        - Cultural festivals, events, and local celebrations
-        - Dining customs, tipping practices, and social interactions
-
-        Always emphasize cultural sensitivity and respectful travel practices.""",
+        instructions=lang_and_cultural_expert_instruction,
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
         requirements=[
             ConditionalRequirement(
@@ -158,62 +137,50 @@ async def multi_agent_travel_planner_with_language():
         llm=llm,
         tools=[handoff_to_destination, handoff_to_weather, handoff_to_language, ThinkTool()],
         memory=UnconstrainedMemory(),
-        instructions="""You are the Travel Coordinator, the main interface for comprehensive travel planning.
-
-        Your role:
-        - Understand traveler requirements and preferences
-        - Coordinate with specialized expert agents as needed
-        - Synthesize information from multiple sources
-        - Create comprehensive, actionable travel recommendations
-        - Ensure all aspects of travel planning are covered
-
-        Available Expert Agents:
-        - Destination Expert: Practical destination information
-        - Travel Meteorologist: Weather analysis and climate recommendations  
-        - Language Expert: Language tips, cultural etiquette, and communication guidance
-
-        Coordination Process:
-        1. Think about what information is needed for comprehensive travel planning
-        2. Delegate specific queries to appropriate expert agents using handoff tools
-        3. Gather insights from multiple specialists
-        4. Synthesize information into cohesive travel recommendations
-        5. Provide a complete travel planning summary
-
-        Always ensure travelers receive well-rounded guidance covering destinations and landmarks, weather, and cultural considerations.""",
+        instructions=travel_coordinator_instruction,
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
         requirements=[
             ConditionalRequirement(ThinkTool, consecutive_allowed=False),
-            AskPermissionRequirement([handoff_to_destination, handoff_to_weather, handoff_to_language])
+            # AskPermissionRequirement([handoff_to_destination, handoff_to_weather, handoff_to_language])
         ]
     )
     
 
-    query = """I'm planning a 2-week cultural immersion trip to Japan (Tokyo and Osaka) as a first-time visitor. 
-    I want to experience traditional culture, visit historical sites, and interact with locals. 
-    I speak only English and want to be respectful of Japanese customs. 
-    What should I know about the destination, weather expectations, and language/cultural tips?"""
+    query = user_query
+    # """I'm planning a 2-week cultural immersion trip to Japan (Tokyo and Osaka) as a first-time visitor. 
+    # I want to experience traditional culture, visit historical sites, and interact with locals. 
+    # I speak only English and want to be respectful of Japanese customs. 
+    # What should I know about the destination, weather expectations, and language/cultural tips?"""
     
     # result = await travel_coordinator.run(query)
-    # print(f"\n📋 Comprehensive Travel Plan:\n{result.answer.text}")
+    # # print(f"\n📋 Comprehensive Travel Plan:\n{result.answer.text}")cle
+    
+    
+
     try:
         result = await travel_coordinator.run(query)
         print(f"full result dict: \n{result.model_dump()}")
         print(f"\n📋 Comprehensive Travel Plan:\n{result.output_structured.response}")
+        
+        return result.output_structured.response
     
     except Exception as e:
         print("\n" + "---" * 10)
         print("🔴 A SPECIFIC ERROR OCCURRED 🔴")
         print(f"Error Type: {type(e)}")
-        print(f"Error Details: {e}")
+        print(f"Error Details: {CustomException(e,sys)}")
         
         # This will often show the *original* Google API error
         if e.__cause__:
             print(f"\nOriginal Cause: {e.__cause__}")
         print("---" * 10 + "\n")
 
-async def main() -> None:
+async def main(input_query) -> None:
     logging.getLogger('asyncio').setLevel(logging.CRITICAL)
-    await multi_agent_travel_planner_with_language()
+    
+    await multi_agent_travel_planner_with_language(input_query)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    input_q= input('enter')
+    response = asyncio.run(main(input_query(input_q)))
+    print(response)
