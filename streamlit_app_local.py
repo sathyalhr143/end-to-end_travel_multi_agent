@@ -231,7 +231,7 @@ if not runner.error_queue.empty():
     st.rerun()
 
 # 3. Handle New User Input
-if not runner.is_running and (prompt := st.chat_input("Ask me if you're not sure what to ask me to give a detailed prompt example for you")):
+if not runner.is_running and (prompt := st.chat_input("If you are unsure how to phrase your request, please ask me for a detailed prompt example")):
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
