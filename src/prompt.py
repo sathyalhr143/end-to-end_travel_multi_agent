@@ -74,10 +74,13 @@ def input_query(input_query: str = None):
     if input_query is not None:
         return input_query
     else:
-        return """I'm planning a 2-week cultural immersion trip to Japan (Tokyo and Osaka) as a first-time visitor. 
-        I want to experience traditional culture, visit historical sites, and interact with locals. 
-        I speak only English and want to be respectful of Japanese customs. 
-        What should I know about the destination, weather expectations, and language/cultural tips?"""
+        pass
+    
+    
+    # """I'm planning a 2-week cultural immersion trip to Japan (Tokyo and Osaka) as a first-time visitor. 
+    #     I want to experience traditional culture, visit historical sites, and interact with locals. 
+    #     I speak only English and want to be respectful of Japanese customs. 
+    #     What should I know about the destination, weather expectations, and language/cultural tips?"""
         
         
         
