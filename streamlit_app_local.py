@@ -181,7 +181,8 @@ with st.sidebar:
 
 # --- Main Interface ---
 st.title("✈️ AI Travel Planner (HITL)")
-st.caption("Powered by **BeeAI Framework**")
+st.caption("Developed using **BeeAI Framework**")
+st.caption("-by Sathyaraj Medipalli")
 
 # 1. Display Chat History
 for message in st.session_state.messages:
@@ -212,7 +213,7 @@ if runner.is_running:
     # CASE B: Agent is working (show spinner)
     else:
         with st.chat_message("assistant"):
-            with st.spinner("Agents are extracting weather, cultural and information about location from web while thninking and coordinating with each other..."):
+            with st.spinner("Agents are extracting weather, cultural and information about the location from web while thninking and coordinating with each other..."):
                 import time
                 time.sleep(5) # Slight delay to allow thread updates
                 st.rerun()    # Poll for updates
