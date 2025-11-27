@@ -213,7 +213,7 @@ if runner.is_running:
     # CASE B: Agent is working (show spinner)
     else:
         with st.chat_message("assistant"):
-            with st.spinner("Agents are extracting weather, cultural and information about the location from web while thninking and coordinating with each other..."):
+            with st.spinner("Agents are thninking and coordinating with each other..."):
                 import time
                 time.sleep(5) # Slight delay to allow thread updates
                 st.rerun()    # Poll for updates
@@ -231,7 +231,7 @@ if not runner.error_queue.empty():
     st.rerun()
 
 # 3. Handle New User Input
-if not runner.is_running and (prompt := st.chat_input("E.g., Plan a 5-day trip to India...")):
+if not runner.is_running and (prompt := st.chat_input("Ask me if you're not sure what to ask me to give a detailed prompt example for you")):
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
