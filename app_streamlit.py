@@ -508,7 +508,7 @@ if runner.is_running:
         with st.chat_message("assistant"):
             with st.spinner("Agents are extracting weather, cultural and information about vietnam from web while thninking and coordinating with each other..."):
                 import time
-                time.sleep(1) # Slight delay to allow thread updates
+                time.sleep(5) # Slight delay to allow thread updates
                 st.rerun()    # Poll for updates
 
 # CASE C: Agent finished successfully

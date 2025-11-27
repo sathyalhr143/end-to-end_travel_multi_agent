@@ -160,7 +160,7 @@ async def multi_agent_travel_planner_with_language(user_query=input_query):
     try:
         result = await travel_coordinator.run(query)
         print(f"full result dict: \n{result.model_dump()}")
-        print(f"\n📋 Comprehensive Travel Plan:\n{result.output_structured.response}")
+        # print(f"\n📋 Comprehensive Travel Plan:\n{result.output_structured.response}")
         
         return result.output_structured.response
     
