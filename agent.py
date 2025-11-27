@@ -141,7 +141,7 @@ async def multi_agent_travel_planner_with_language(user_query=input_query):
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
         requirements=[
             ConditionalRequirement(ThinkTool, consecutive_allowed=False),
-            # AskPermissionRequirement([handoff_to_destination, handoff_to_weather, handoff_to_language])
+            AskPermissionRequirement([handoff_to_destination, handoff_to_weather, handoff_to_language])
         ]
     )
     
